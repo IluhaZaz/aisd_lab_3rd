@@ -27,6 +27,14 @@ void reverse(vector<T>& a) {
 
 
 template <typename T>
+void reverse(T* a, int len) {
+    for (int i = 0; i < len / 2; i++) {
+        swap(a[i], a[len - i - 1]);
+    }
+}
+
+
+template <typename T>
 void shaker_sort(vector<T>& a, bool increase) {
         int left_num = 1;
         int right_num = a.size();
@@ -122,16 +130,77 @@ void merge_sort_right(vector<T> a1, vector<T> a2, vector<T>& res_arr, int end_in
 
 
 template <typename T>
+T* vector_to_array(const vector<T>& a) {
+    T* arr = new T[a.size()];
+    for (int i = 0; i < a.size(); i++)
+        arr[i] = a[i];
+    return arr;
+}
+
+template <typename T>
+vector<T> array_to_vector(const T* a, int size) {
+    vector<T> v(size);
+    for (int i = 0; i < size; i++)
+        v[i] = a[i];
+    return v;
+}
+
+template <typename T>
+T* arr_by_range(T* start, T* end) {
+    int len = end - start + 1;
+    T* arr = new T[abs(len)];
+
+    if (len > 0) {
+        for (int i = 0; i < len; i++) {
+            arr[i] = start[i];
+        }
+    }
+    else {
+        for (int i = 0; i < abs(len); i++) {
+            arr[i] = end[i];
+        }
+        reverse(arr, abs(len));
+    }
+    return arr;
+}
+
+
+
+template <typename T>
 void natural_merge_sort(vector<T> a) {
-    vector<T>b(a.size());
 
-    int a_start_indx = 0;
-    int a_end_indx = a.size() - 1;
+    T* arr = vector_to_array(a);
 
-    int b_start_indx = 0;
-    int b_end_indx = b.size() - 1;
+    T* arr_left_start = arr;
+    T* arr_left_end = arr_left_start;
+
+    T* arr_right_start = arr + a.size() - 1;
+    T* arr_right_end = arr_right_start;
+
+    vector<T> help(a);
     
-    while (a_start_indx < a_end_indx) {
+    int n = 0;
 
+    while (arr_left_end < arr_right_end) {
+        while (a[arr_left_end] < a[arr_left_end + 1]) {
+            arr_left_end++;
+        }
+        while (a[arr_right_end] < a[arr_right_end - 1]) {
+            arr_right_end--;
+        }
+
+        if(n%2 == 0)
+        {
+            vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end), arr_left_end - arr_left_start);
+            vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start), arr_right_start - arr_right_end);
+            merge_sort_left(v1, v2, help, arr_left_end - arr_left_start);
+        }
+        else {
+            vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end), arr_left_end - arr_left_start);
+            vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start), arr_right_start - arr_right_end);
+            merge_sort_right(v1, v2, help, arr_right_start - arr_right_end);
+        }
+        arr_left_start = arr_left_end;
+        arr_right_start = arr_right_end;
     }
 }
