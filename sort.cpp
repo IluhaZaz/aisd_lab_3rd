@@ -36,24 +36,24 @@ void reverse(T* a, int len) {
 
 template <typename T>
 void shaker_sort(vector<T>& a, bool increase) {
-        int left_num = 1;
-        int right_num = a.size();
-        while (left_num < right_num) {
-            for (int i = left_num - 1; i < right_num - 1; i++) {
-                if (a[i] > a[i + 1]) {
-                    swap(a[i], a[i + 1]);
-                }
+    int left_num = 1;
+    int right_num = a.size();
+    while (left_num < right_num) {
+        for (int i = left_num - 1; i < right_num - 1; i++) {
+            if (a[i] > a[i + 1]) {
+                swap(a[i], a[i + 1]);
             }
-            right_num--;
-
-            for (int i = right_num - 1; i > left_num - 1; i--) {
-                if (a[i] < a[i - 1]) {
-                    swap(a[i], a[i - 1]);
-                }
-            }
-            left_num++;
         }
-    if(!increase) {
+        right_num--;
+
+        for (int i = right_num - 1; i > left_num - 1; i--) {
+            if (a[i] < a[i - 1]) {
+                swap(a[i], a[i - 1]);
+            }
+        }
+        left_num++;
+    }
+    if (!increase) {
         reverse(a);
     }
 }
@@ -95,36 +95,36 @@ void merge_sort_left(vector<T> a1, vector<T> a2, vector<T>& res_arr, int start_i
 
 
 template <typename T>
-void merge_sort_right(vector<T> a1, vector<T> a2, vector<T>& res_arr, int end_indx) {
-    shaker_sort(a1, 1);
-    shaker_sort(a2, 1);
+void merge_sort_right(vector<T> a1, vector<T> a2, vector<T>& res_arr, int start_indx) {
+    shaker_sort(a1, 0);
+    shaker_sort(a2, 0);
 
 
     int i = 0;
     int j = 0;
-    int k = end_indx;
+    int k = start_indx;
 
     while (i < a1.size() && j < a2.size()) {
-        if (a1[i] <= a2[j]) {
+        if (a1[i] >= a2[j]) {
             res_arr[k] = a1[i];
-            k--;
+            k++;
             i++;
         }
         else {
             res_arr[k] = a2[j];
-            k--;
+            k++;
             j++;
         }
     }
     while (i < a1.size()) {
         res_arr[k] = a1[i];
         i++;
-        k--;
+        k++;
     }
     while (j < a2.size()) {
         res_arr[k] = a2[j];
         j++;
-        k--;
+        k++;
     }
 }
 
@@ -165,6 +165,13 @@ T* arr_by_range(T* start, T* end) {
 }
 
 
+template <typename T>
+T my_max(T lhs, T rhs) {
+    if (lhs >= rhs)
+        return lhs;
+    return rhs;
+}
+
 
 template <typename T>
 vector<T> natural_merge_sort(vector<T> a) {
@@ -178,18 +185,18 @@ vector<T> natural_merge_sort(vector<T> a) {
     T* arr_right_end = arr_right_start;
 
     vector<T> help(a.size());
-    
+
     int n = 0;
 
     while (arr_left_end < arr_right_end) {
-        while (*arr_left_end < *(arr_left_end + 1)) {
+        while ((*arr_left_end < *(arr_left_end + 1)) && (arr_left_end + 1 != arr_right_end)) {
             arr_left_end++;
         }
         while ((*arr_right_end < *(arr_right_end - 1)) && (arr_right_end - 1 != arr_left_end)) {
             arr_right_end--;
         }
 
-        if(n%2 == 0)
+        if (n % 2 == 0)
         {
             vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end), arr_left_end - arr_left_start + 1);
             vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start), arr_right_start - arr_right_end + 1);
@@ -198,7 +205,7 @@ vector<T> natural_merge_sort(vector<T> a) {
         else {
             vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end), arr_left_end - arr_left_start + 1);
             vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start), arr_right_start - arr_right_end + 1);
-            merge_sort_right(v1, v2, help, arr_right_start - arr + 1);
+            merge_sort_right(v1, v2, help, help.size() - v1.size() - v2.size());
         }
 
         arr_left_end += 1;
@@ -211,13 +218,3 @@ vector<T> natural_merge_sort(vector<T> a) {
     }
     return help;
 }
-
-
-/*
-template <typename T>
-void natural_two_way_merge_sort(vector<T>& a) {
-    while (1) {
-        a = natural_merge_sort(a);
-    }
-}
-*/

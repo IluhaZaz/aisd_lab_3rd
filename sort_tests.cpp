@@ -11,8 +11,8 @@ TEST(SortTests, BubbleSortCheck) {
 
     bubble_sort(a);
 
-    EXPECT_EQ(a,  b);
-    
+    EXPECT_EQ(a, b);
+
 }
 
 TEST(SortTests, BubbleSortCheck2) {
@@ -64,8 +64,8 @@ TEST(SortTests, MergeSortLeftCheck) {
 
     merge_sort_left(a, b, c, 2);
 
-    vector<int> d = {10, 10, 1, 2, 3, 4, 5, 6, 7, 8 };
-    
+    vector<int> d = { 10, 10, 1, 2, 3, 4, 5, 6, 7, 8 };
+
     EXPECT_EQ(d, c);
     EXPECT_EQ(*b.data(), 4);
 }
@@ -78,9 +78,9 @@ TEST(SortTests, MergeSortRightCheck) {
     c[0] = 10;
     c[1] = 10;
 
-    merge_sort_right(a, b, c, c.size() - 1);
+    merge_sort_right(a, b, c, 2);
 
-    vector<int> d = {10, 10, 8, 7, 6, 5, 4, 3, 2, 1};
+    vector<int> d = { 10, 10, 8, 7, 6, 5, 4, 3, 2, 1 };
 
     EXPECT_EQ(d, c);
 }
@@ -89,19 +89,19 @@ TEST(SortTests, MergeSortRightCheck) {
 TEST(SortTests, ReverseCheck) {
     vector<int> a = { 1, 2, 3, 4 };
     vector<int> b = { 4, 3, 2, 1 };
-    
+
     reverse(b);
 
     EXPECT_EQ(a, b);
 }
 
 TEST(SortTests, ReverseCheck2) {
-    int* a = new int[4]{ 1, 2, 3, 4 };
-    int* b = new int[4]{ 4, 3, 2, 1 };
+    int* a = new int[4] { 1, 2, 3, 4 };
+    int* b = new int[4] { 4, 3, 2, 1 };
 
     reverse(b, 4);
 
-    for(int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++)
         EXPECT_EQ(a[i], b[i]);
 }
 
@@ -132,14 +132,23 @@ TEST(SortTests, ArrayByRangeCheck) {
 
     int* b = new int[3] {2, 3, 4};
 
-    for(int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++)
         EXPECT_EQ(b[i], arr_by_range(&a[1], &a[3])[i]);
 }
 
 
 TEST(SortTests, NaturalMergeSortCheck) {
-    vector<int> a = {5, 3, 2, 7, 1, 8, 4, 6};
-    vector<int> b = {5, 6, 1, 2, 7, 8, 4, 3};
+    vector<int> a = { 5, 3, 2, 7, 1, 8, 4, 6 };
+    vector<int> b = { 5, 6, 1, 2, 7, 8, 4, 3 };
+
+
+    a = natural_merge_sort(a);
+    EXPECT_EQ(a, b);
+}
+
+TEST(SortTests, NaturalMergeSortCheck2) {
+    vector<int> a = { 5, 6, 1, 2, 7, 8, 4, 3 };
+    vector<int> b = { 3, 4, 5, 6, 8, 7, 2, 1 };
 
 
     a = natural_merge_sort(a);
@@ -147,7 +156,7 @@ TEST(SortTests, NaturalMergeSortCheck) {
 }
 
 
-TEST(SortTests, NaturalMergeSortCheck2) {
+TEST(SortTests, NaturalMergeSortCheck3) {
     vector<int> a = { 2, 4, 5, 1, 6, 3, 7 };
     vector<int> b = { 2, 4, 5, 7, 6, 3, 1 };
 
@@ -155,12 +164,4 @@ TEST(SortTests, NaturalMergeSortCheck2) {
     a = natural_merge_sort(a);
     EXPECT_EQ(a, b);
 }
-
-
-TEST(SortTests, NaturalTwoWayMergeSortCheck) {
-    vector<int> a = { 5, 3, 2, 7, 1, 8, 4, 6 };
-
-    natural_two_way_merge_sort(a);
-}
-
 
