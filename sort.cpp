@@ -166,15 +166,7 @@ T* arr_by_range(T* start, T* end) {
 
 
 template <typename T>
-T my_max(T lhs, T rhs) {
-    if (lhs >= rhs)
-        return lhs;
-    return rhs;
-}
-
-
-template <typename T>
-vector<T> natural_merge_sort(vector<T> a) {
+vector<T> merge(vector<T> a) {
 
     T* arr = vector_to_array(a);
 
@@ -217,4 +209,14 @@ vector<T> natural_merge_sort(vector<T> a) {
         n++;
     }
     return help;
+}
+
+
+template <typename T>
+void natural_merge_sort(vector<T>& a) {
+    vector<T> a_prev;
+    do {
+        a_prev = a;
+        a = merge(a);
+    } while (a != a_prev);
 }

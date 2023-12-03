@@ -137,31 +137,50 @@ TEST(SortTests, ArrayByRangeCheck) {
 }
 
 
-TEST(SortTests, NaturalMergeSortCheck) {
+TEST(SortTests, MergeCheck) {
     vector<int> a = { 5, 3, 2, 7, 1, 8, 4, 6 };
     vector<int> b = { 5, 6, 1, 2, 7, 8, 4, 3 };
 
 
-    a = natural_merge_sort(a);
+    a = merge(a);
     EXPECT_EQ(a, b);
 }
 
-TEST(SortTests, NaturalMergeSortCheck2) {
+TEST(SortTests, MergeCheck2) {
     vector<int> a = { 5, 6, 1, 2, 7, 8, 4, 3 };
     vector<int> b = { 3, 4, 5, 6, 8, 7, 2, 1 };
 
 
-    a = natural_merge_sort(a);
+    a = merge(a);
     EXPECT_EQ(a, b);
 }
 
 
-TEST(SortTests, NaturalMergeSortCheck3) {
+TEST(SortTests, MergeCheck3) {
     vector<int> a = { 2, 4, 5, 1, 6, 3, 7 };
     vector<int> b = { 2, 4, 5, 7, 6, 3, 1 };
 
 
-    a = natural_merge_sort(a);
+    a = merge(a);
     EXPECT_EQ(a, b);
 }
 
+
+TEST(SortTests, NaturalMergeSortCheck) {
+    vector<int> a = { 2, 4, 5, 1, 6, 3, 7 };
+    vector<int> b = {1, 2, 3, 4, 5, 6, 7};
+
+
+    natural_merge_sort(a);
+    EXPECT_EQ(a, b);
+}
+
+
+TEST(SortTests, NaturalMergeSortCheck2) {
+    vector<int> a = { 1, 2, 3, 4, 5, 6, 7 };
+    vector<int> b = { 1, 2, 3, 4, 5, 6, 7 };
+
+
+    natural_merge_sort(a);
+    EXPECT_EQ(a, b);
+}
