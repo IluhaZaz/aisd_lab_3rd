@@ -89,8 +89,9 @@ TEST(SortTests, MergeSortRightCheck) {
 TEST(SortTests, ReverseCheck) {
     vector<int> a = { 1, 2, 3, 4 };
     vector<int> b = { 4, 3, 2, 1 };
+    stats s;
 
-    reverse(b);
+    reverse(b, s);
 
     EXPECT_EQ(a, b);
 }
@@ -98,8 +99,9 @@ TEST(SortTests, ReverseCheck) {
 TEST(SortTests, ReverseCheck2) {
     int* a = new int[4] { 1, 2, 3, 4 };
     int* b = new int[4] { 4, 3, 2, 1 };
+    stats s;
 
-    reverse(b, 4);
+    reverse(b, 4, s);
 
     for (int i = 0; i < 4; i++)
         EXPECT_EQ(a[i], b[i]);
@@ -109,8 +111,9 @@ TEST(SortTests, ReverseCheck2) {
 TEST(SortTests, VectorToArrayCheck) {
     vector<int> a = { 1, 2, 3, 4 };
     int* b = new int[4] { 1, 2, 3, 4 };
+    stats s;
 
-    int* c = vector_to_array(a);
+    int* c = vector_to_array(a, s);
 
     for (int i = 0; i < 4; i++)
         EXPECT_EQ(c[i], b[i]);
@@ -120,8 +123,9 @@ TEST(SortTests, VectorToArrayCheck) {
 TEST(SortTests, ArrayToVectorCheck) {
     vector<int> a = { 1, 2, 3, 4 };
     int* b = new int[4] { 1, 2, 3, 4 };
+    stats s;
 
-    vector<int> c = array_to_vector(b, 4);
+    vector<int> c = array_to_vector(b, 4, s);
 
     EXPECT_EQ(c, a);
 }
@@ -132,26 +136,30 @@ TEST(SortTests, ArrayByRangeCheck) {
 
     int* b = new int[3] {2, 3, 4};
 
+    stats s;
+
     for (int i = 0; i < 3; i++)
-        EXPECT_EQ(b[i], arr_by_range(&a[1], &a[3])[i]);
+        EXPECT_EQ(b[i], arr_by_range(&a[1], &a[3], s)[i]);
 }
 
 
 TEST(SortTests, MergeCheck) {
     vector<int> a = { 5, 3, 2, 7, 1, 8, 4, 6 };
     vector<int> b = { 5, 6, 1, 2, 7, 8, 4, 3 };
+    stats s;
 
 
-    a = merge(a);
+    a = merge(a, s);
     EXPECT_EQ(a, b);
 }
 
 TEST(SortTests, MergeCheck2) {
     vector<int> a = { 5, 6, 1, 2, 7, 8, 4, 3 };
     vector<int> b = { 3, 4, 5, 6, 8, 7, 2, 1 };
+    stats s;
 
 
-    a = merge(a);
+    a = merge(a, s);
     EXPECT_EQ(a, b);
 }
 
@@ -159,9 +167,10 @@ TEST(SortTests, MergeCheck2) {
 TEST(SortTests, MergeCheck3) {
     vector<int> a = { 2, 4, 5, 1, 6, 3, 7 };
     vector<int> b = { 2, 4, 5, 7, 6, 3, 1 };
+    stats s;
 
 
-    a = merge(a);
+    a = merge(a, s);
     EXPECT_EQ(a, b);
 }
 
