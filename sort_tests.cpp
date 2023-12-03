@@ -80,7 +80,7 @@ TEST(SortTests, MergeSortRightCheck) {
 
     merge_sort_right(a, b, c, c.size() - 1);
 
-    vector<int> d = {10, 10, 1, 2, 3, 4, 5, 6, 7, 8 };
+    vector<int> d = {10, 10, 8, 7, 6, 5, 4, 3, 2, 1};
 
     EXPECT_EQ(d, c);
 }
@@ -127,13 +127,40 @@ TEST(SortTests, ArrayToVectorCheck) {
 }
 
 
-TEST(SortTests, ArrByRangeCheck) {
-    int* a = new int[7] { 1, 2, 3, 4, 5, 6 ,7 };
-    int* b = arr_by_range(a + 2, a + 5);
+TEST(SortTests, ArrayByRangeCheck) {
+    int* a = new int[6] { 1, 2, 3, 4, 5, 6};
+
+    int* b = new int[3] {2, 3, 4};
+
+    for(int i = 0; i < 3; i++)
+        EXPECT_EQ(b[i], arr_by_range(&a[1], &a[3])[i]);
+}
 
 
-    for (int i = 0; i < 4; i++)
-        EXPECT_EQ(a[i + 2], b[i]);
+TEST(SortTests, NaturalMergeSortCheck) {
+    vector<int> a = {5, 3, 2, 7, 1, 8, 4, 6};
+    vector<int> b = {5, 6, 1, 2, 7, 8, 4, 3};
+
+
+    a = natural_merge_sort(a);
+    EXPECT_EQ(a, b);
+}
+
+
+TEST(SortTests, NaturalMergeSortCheck2) {
+    vector<int> a = { 2, 4, 5, 1, 6, 3, 7 };
+    vector<int> b = { 2, 4, 5, 7, 6, 3, 1 };
+
+
+    a = natural_merge_sort(a);
+    EXPECT_EQ(a, b);
+}
+
+
+TEST(SortTests, NaturalTwoWayMergeSortCheck) {
+    vector<int> a = { 5, 3, 2, 7, 1, 8, 4, 6 };
+
+    natural_two_way_merge_sort(a);
 }
 
 

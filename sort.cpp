@@ -96,8 +96,8 @@ void merge_sort_left(vector<T> a1, vector<T> a2, vector<T>& res_arr, int start_i
 
 template <typename T>
 void merge_sort_right(vector<T> a1, vector<T> a2, vector<T>& res_arr, int end_indx) {
-    shaker_sort(a1, 0);
-    shaker_sort(a2, 0);
+    shaker_sort(a1, 1);
+    shaker_sort(a2, 1);
 
 
     int i = 0;
@@ -105,7 +105,7 @@ void merge_sort_right(vector<T> a1, vector<T> a2, vector<T>& res_arr, int end_in
     int k = end_indx;
 
     while (i < a1.size() && j < a2.size()) {
-        if (a1[i] >= a2[j]) {
+        if (a1[i] <= a2[j]) {
             res_arr[k] = a1[i];
             k--;
             i++;
@@ -167,7 +167,7 @@ T* arr_by_range(T* start, T* end) {
 
 
 template <typename T>
-void natural_merge_sort(vector<T> a) {
+vector<T> natural_merge_sort(vector<T> a) {
 
     T* arr = vector_to_array(a);
 
@@ -177,30 +177,47 @@ void natural_merge_sort(vector<T> a) {
     T* arr_right_start = arr + a.size() - 1;
     T* arr_right_end = arr_right_start;
 
-    vector<T> help(a);
+    vector<T> help(a.size());
     
     int n = 0;
 
     while (arr_left_end < arr_right_end) {
-        while (a[arr_left_end] < a[arr_left_end + 1]) {
+        while (*arr_left_end < *(arr_left_end + 1)) {
             arr_left_end++;
         }
-        while (a[arr_right_end] < a[arr_right_end - 1]) {
+        while ((*arr_right_end < *(arr_right_end - 1)) && (arr_right_end - 1 != arr_left_end)) {
             arr_right_end--;
         }
 
         if(n%2 == 0)
         {
-            vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end), arr_left_end - arr_left_start);
-            vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start), arr_right_start - arr_right_end);
-            merge_sort_left(v1, v2, help, arr_left_end - arr_left_start);
+            vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end), arr_left_end - arr_left_start + 1);
+            vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start), arr_right_start - arr_right_end + 1);
+            merge_sort_left(v1, v2, help, arr_left_start - arr);
         }
         else {
-            vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end), arr_left_end - arr_left_start);
-            vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start), arr_right_start - arr_right_end);
-            merge_sort_right(v1, v2, help, arr_right_start - arr_right_end);
+            vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end), arr_left_end - arr_left_start + 1);
+            vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start), arr_right_start - arr_right_end + 1);
+            merge_sort_right(v1, v2, help, arr_right_start - arr + 1);
         }
+
+        arr_left_end += 1;
+        arr_right_end -= 1;
+
         arr_left_start = arr_left_end;
         arr_right_start = arr_right_end;
+
+        n++;
+    }
+    return help;
+}
+
+
+/*
+template <typename T>
+void natural_two_way_merge_sort(vector<T>& a) {
+    while (1) {
+        a = natural_merge_sort(a);
     }
 }
+*/
