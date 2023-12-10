@@ -87,224 +87,123 @@ stats shaker_sort(vector<T>& a, bool increase) {
 }
 
 
-template <typename T>
-stats merge_sort_left(vector<T> a1, vector<T> a2, vector<T>& res_arr, int start_indx) {
-
-    stats s;
-
-    s.copy_count += 2;
-
-    {
-        stats s1 = shaker_sort(a1, 1);
-        stats s2 = shaker_sort(a2, 1);
-
-        s.comparison_count = s.comparison_count + s1.comparison_count + s2.comparison_count;
-        s.copy_count = s.copy_count + s1.copy_count + s2.copy_count;
-    }
-
-
-    int i = 0;
-    int j = 0;
-    int k = start_indx;
-
-    while (i < a1.size() && j < a2.size()) {
-        s.comparison_count += 1;
-        if (a1[i] <= a2[j]) {
-            s.comparison_count += 1;
-            res_arr[k] = a1[i];
-            k++;
-            i++;
-        }
-        else {
-            s.comparison_count += 1;
-            res_arr[k] = a2[j];
-            k++;
-            j++;
-        }
-    }
-    while (i < a1.size()) {
-        s.comparison_count += 1;
-        res_arr[k] = a1[i];
-        i++;
-        k++;
-    }
-    while (j < a2.size()) {
-        s.comparison_count += 1;
-        res_arr[k] = a2[j];
-        j++;
-        k++;
-    }
-
-    return s;
+template<typename T>
+stats merge_sort_left(vector<T>& a1, vector<T>& a2, vector<T>& temp, int start_index) {
+	stats s;
+	int i = 0;
+	int j = 0;
+	int k = start_index;
+	while (i < a1.size() && j < a2.size()) {
+		s.comparison_count += 3;
+		if (a1[i] <= a2[j]) {
+			temp[k] = a1[i];
+			i++;
+		}
+		else {
+			temp[k] = a2[j];
+			j++;
+		}
+		k++;
+	}
+	while (i < a1.size()) {
+		s.comparison_count++;
+		temp[k] = a1[i];
+		i++;
+		k++;
+	}
+	while (j < a2.size()) {
+		s.comparison_count++;
+		temp[k] = a2[j];
+		j++;
+		k++;
+	}
+	return s;
 }
-
-
-template <typename T>
-stats merge_sort_right(vector<T> a1, vector<T> a2, vector<T>& res_arr, int start_indx) {
-    
-    stats s;
-
-    s.copy_count += 2;
-
-
-    {
-        stats s1 = shaker_sort(a1, 0);
-        stats s2 = shaker_sort(a2, 0);
-
-        s.comparison_count = s.comparison_count + s1.comparison_count + s2.comparison_count;
-        s.copy_count = s.copy_count + s1.copy_count + s2.copy_count;
-    }
-
-
-    int i = 0;
-    int j = 0;
-    int k = start_indx;
-
-    while (i < a1.size() && j < a2.size()) {
-        s.comparison_count += 1;
-        if (a1[i] >= a2[j]) {
-            s.comparison_count += 1;
-            res_arr[k] = a1[i];
-            k++;
-            i++;
-        }
-        else {
-            s.comparison_count += 1;
-            res_arr[k] = a2[j];
-            k++;
-            j++;
-        }
-    }
-    while (i < a1.size()) {
-        s.comparison_count += 1;
-        res_arr[k] = a1[i];
-        i++;
-        k++;
-    }
-    while (j < a2.size()) {
-        s.comparison_count += 1;
-        res_arr[k] = a2[j];
-        j++;
-        k++;
-    }
-
-    return s;
+template<typename T>
+stats merge_sort_right(vector<T>& a1, vector<T>& a2, vector<T>& temp, int start_index) {
+	stats s;
+	int i = 0;
+	int j = 0;
+	int k = start_index + a1.size() + a2.size() - 1;
+	while (i < a1.size() && j < a2.size()) {
+		s.comparison_count += 3;
+		if (a1[i] <= a2[j]) {
+			temp[k] = a1[i];
+			i++;
+		}
+		else {
+			temp[k] = a2[j];
+			j++;
+		}
+		k--;
+	}
+	while (i < a1.size()) {
+		temp[k] = a1[i];
+		s.comparison_count++;
+		i++;
+		k--;
+	}
+	while (j < a2.size()) {
+		temp[k] = a2[j];
+		s.comparison_count++;
+		j++;
+		k--;
+	}
+	return s;
 }
+template<typename T>
+vector<T> merge(vector<T>& a, stats& stat) {
+	vector<int> temp(a.size());
+	size_t left_start = 0;
+	size_t left_end = 0;
 
+	size_t left = 0;
+	size_t right = a.size();
+	size_t right_start = a.size() - 1;
+	size_t right_end = right_start;
 
-template <typename T>
-T* vector_to_array(const vector<T>& a, stats& s) {
-    T* arr = new T[a.size()];
-    for (int i = 0; i < a.size(); i++)
-    {
-        s.comparison_count += 1;
-        arr[i] = a[i];
-    }
-    return arr;
+	size_t n = 0;
+	while (left_end < right_end) {
+		while (a[left_end] <= a[left_end + 1] && left_end + 1 != right_end) {
+			stat.comparison_count++;
+			left_end++;
+		}
+		while (a[right_end] <= a[right_end - 1] && right_end - 1 != left_end) {
+			stat.comparison_count++;
+			right_end--;
+		}
+		if (left_end == right_end) {
+			break;
+		}
+		vector<int> subvector1(a.begin() + left_start, a.begin() + left_end + 1);
+		vector<int> subvector2(a.begin() + right_end, a.begin() + right_start + 1);
+		reverse(subvector2.begin(), subvector2.end());
+		if (n % 2 == 0) {
+			merge_sort_left(subvector1, subvector2, temp, left);
+			left += subvector1.size() + subvector2.size();
+		}
+		else {
+			right -= subvector1.size() + subvector2.size();
+			merge_sort_right(subvector1, subvector2, temp, right);
+		}
+		left_end++;
+		right_end--;
+		left_start = left_end;
+		right_start = right_end;
+		n++;
+	}
+	return temp;
 }
-
-template <typename T>
-vector<T> array_to_vector(const T* a, int size, stats& s) {
-    vector<T> v(size);
-    for (int i = 0; i < size; i++)
-    {
-        s.comparison_count += 1;
-        v[i] = a[i];
-    }
-    return v;
-}
-
-template <typename T>
-T* arr_by_range(T* start, T* end, stats& s) {
-    int len = end - start + 1;
-    T* arr = new T[abs(len)];
-
-    if (len > 0) {
-        s.comparison_count == 1;
-        for (int i = 0; i < len; i++) {
-            s.comparison_count == 1;
-            arr[i] = start[i];
-        }
-    }
-    else {
-        s.comparison_count == 1;
-        for (int i = 0; i < abs(len); i++) {
-            s.comparison_count == 1;
-            arr[i] = end[i];
-        }
-        reverse(arr, abs(len), s);
-    }
-    return arr;
-}
-
-
-template <typename T>
-vector<T> merge(vector<T> a, stats& s) {
-    s.copy_count += 1;
-
-    T* arr = vector_to_array(a, s);
-
-    T* arr_left_start = arr;
-    T* arr_left_end = arr_left_start;
-
-    T* arr_right_start = arr + a.size() - 1;
-    T* arr_right_end = arr_right_start;
-
-    vector<T> help(a.size());
-
-    int n = 0;
-
-    while (arr_left_end < arr_right_end) {
-        s.comparison_count += 1;
-        while ((*arr_left_end < *(arr_left_end + 1)) && (arr_left_end + 1 != arr_right_end)) {
-            s.comparison_count += 2;
-            arr_left_end++;
-        }
-        while ((*arr_right_end < *(arr_right_end - 1)) && (arr_right_end - 1 != arr_left_end)) {
-            s.comparison_count += 2;
-            arr_right_end--;
-        }
-
-        if (n % 2 == 0)
-        {
-            s.comparison_count += 1;
-            vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end, s), arr_left_end - arr_left_start + 1, s);
-            vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start, s), arr_right_start - arr_right_end + 1, s);
-            merge_sort_left(v1, v2, help, arr_left_start - arr);
-        }
-        else {
-            s.comparison_count += 1;
-            vector<T> v1 = array_to_vector(arr_by_range(arr_left_start, arr_left_end, s), arr_left_end - arr_left_start + 1, s);
-            vector<T> v2 = array_to_vector(arr_by_range(arr_right_end, arr_right_start, s), arr_right_start - arr_right_end + 1, s);
-            merge_sort_right(v1, v2, help, help.size() - v1.size() - v2.size());
-        }
-
-        arr_left_end += 1;
-        arr_right_end -= 1;
-
-        arr_left_start = arr_left_end;
-        arr_right_start = arr_right_end;
-
-        n++;
-    }
-    return help;
-}
-
-
-template <typename T>
+template<typename T>
 stats natural_merge_sort(vector<T>& a) {
-
-    stats s;
-
-    vector<T> a_prev;
-    do {
-        a_prev = a;
-        a = merge(a, s);
-    } while (a != a_prev);
-
-    return s;
+	vector<int> a_prev;
+	stats stat;
+	do {
+		a_prev = a;
+		a = merge(a, stat);
+	} while (a != a_prev);
+	return stat;
 }
-
 
 std::uniform_int_distribution<int> getDice(std::true_type)
 {
@@ -337,8 +236,8 @@ void graph_for_rand_arr() {
             }
 
             stats s = natural_merge_sort(arr);
-            comparsions += s.comparison_count/13;
-            copies += s.copy_count/13;
+            comparsions += s.comparison_count / 13;
+            copies += s.copy_count / 13;
         }
     }
 }
