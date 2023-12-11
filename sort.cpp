@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <ctime>
 
 
 using namespace std;
@@ -13,8 +14,19 @@ using namespace std;
 struct stats {
     size_t comparison_count = 0;
     size_t copy_count = 0;
+	friend void operator += (stats& s1, const stats& s2);
 };
 
+void operator += (stats& s1, const stats& s2) {
+	s1.comparison_count += s2.comparison_count;
+	s1.copy_count += s2.copy_count;
+}
+
+
+ostream& operator << (ostream& out, stats& s) {
+	cout << "Comparsions: " << s.comparison_count << "  Copies: " << s.copy_count << " ";
+	return out;
+}
 
 
 template <typename T>
@@ -35,25 +47,7 @@ stats bubble_sort(vector<T>& a) {
 
 
 template <typename T>
-void reverse(vector<T>& a, stats& s) {
-    for (int i = 0; i < a.size() / 2; i++) {
-        s.comparison_count += 1;
-        swap(a[i], a[a.size() - i - 1]);
-    }
-}
-
-
-template <typename T>
-void reverse(T* a, int len, stats& s) {
-    for (int i = 0; i < len / 2; i++) {
-        s.comparison_count += 1;
-        swap(a[i], a[len - i - 1]);
-    }
-}
-
-
-template <typename T>
-stats shaker_sort(vector<T>& a, bool increase) {
+stats shaker_sort(vector<T>& a) {
 
     stats s;
 
@@ -79,10 +73,6 @@ stats shaker_sort(vector<T>& a, bool increase) {
         }
         left_num++;
     }
-    if (!increase) {
-        s.comparison_count += 1;
-        reverse(a, s);
-    }
     return s;
 }
 
@@ -95,6 +85,7 @@ stats merge_sort_left(vector<T>& a1, vector<T>& a2, vector<T>& temp, int start_i
 	int k = start_index;
 	while (i < a1.size() && j < a2.size()) {
 		s.comparison_count += 3;
+		s.copy_count += 1;
 		if (a1[i] <= a2[j]) {
 			temp[k] = a1[i];
 			i++;
@@ -106,12 +97,14 @@ stats merge_sort_left(vector<T>& a1, vector<T>& a2, vector<T>& temp, int start_i
 		k++;
 	}
 	while (i < a1.size()) {
+		s.copy_count += 1;
 		s.comparison_count++;
 		temp[k] = a1[i];
 		i++;
 		k++;
 	}
 	while (j < a2.size()) {
+		s.copy_count += 1;
 		s.comparison_count++;
 		temp[k] = a2[j];
 		j++;
@@ -127,6 +120,7 @@ stats merge_sort_right(vector<T>& a1, vector<T>& a2, vector<T>& temp, int start_
 	int k = start_index + a1.size() + a2.size() - 1;
 	while (i < a1.size() && j < a2.size()) {
 		s.comparison_count += 3;
+		s.copy_count += 1;
 		if (a1[i] <= a2[j]) {
 			temp[k] = a1[i];
 			i++;
@@ -138,12 +132,14 @@ stats merge_sort_right(vector<T>& a1, vector<T>& a2, vector<T>& temp, int start_
 		k--;
 	}
 	while (i < a1.size()) {
+		s.copy_count += 1;
 		temp[k] = a1[i];
 		s.comparison_count++;
 		i++;
 		k--;
 	}
 	while (j < a2.size()) {
+		s.copy_count += 1;
 		temp[k] = a2[j];
 		s.comparison_count++;
 		j++;
@@ -194,90 +190,81 @@ vector<T> merge(vector<T>& a, stats& stat) {
 	}
 	return temp;
 }
+
+
 template<typename T>
 stats natural_merge_sort(vector<T>& a) {
 	vector<int> a_prev;
-	stats stat;
+	stats s;
 	do {
 		a_prev = a;
-		a = merge(a, stat);
+		a = merge(a, s);
 	} while (a != a_prev);
-	return stat;
-}
-
-std::uniform_int_distribution<int> getDice(std::true_type)
-{
-    return std::uniform_int_distribution<int>(std::numeric_limits<int>::min(), std::numeric_limits<int>::max());
+	return s;
 }
 
 
-int my_random()
-{
-    std::random_device randomDevice;
-    std::mt19937_64 generator(randomDevice());
-    auto dice = getDice(std::integral_constant<bool, std::numeric_limits<int>::is_integer>());
-    return dice(generator);
-}
+template <typename T>
+void graph_for_rand_arr(unsigned int seed, stats (&sort_func)(vector<T>&)) {
 
+	srand(seed);
 
-void graph_for_rand_arr() {
     int* len = new int[13] {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 25000, 50000, 100000};
 
 
     for (int i = 0; i < 13; i++) {
-        double comparsions = 0;
-        double copies = 0;
+		
+		stats s;
+
         for (int j = 0; j < 100; j++) {
 
             vector<int> arr(len[i]);
             for (int k = 0; k < len[i]; k++)
             {
-                arr[k] = my_random();
+                arr[k] = rand();
             }
-
-            stats s = natural_merge_sort(arr);
-            comparsions += s.comparison_count / 13;
-            copies += s.copy_count / 13;
+            s += sort_func(arr);
         }
+
+		s.comparison_count /= 100;
+		s.copy_count /= 100;
+
+		cout << s;
     }
 }
 
 
-void graph_for_sorted_arr() {
+template <typename T>
+void graph_for_sorted_arr(stats(&sort_func)(vector<T>&)) {
     int* len = new int[13] {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 25000, 50000, 100000};
 
 
     for (int i = 0; i < 13; i++) {
-        int comparsions = 0;
-        int copies = 0;
         vector<int> arr(len[i]);
         for (int k = 0; k < len[i]; k++)
         {
             arr[k] = i;
         }
 
-        stats s = natural_merge_sort(arr);
-        comparsions += s.comparison_count;
-        copies += s.copy_count;
+        stats s = sort_func(arr);
+		cout << s;
     }
 }
 
 
-void graph_for_reverse_sorted_arr() {
+template <typename T>
+void graph_for_reverse_sorted_arr(stats(&sort_func)(vector<T>&)) {
     int* len = new int[13] {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 25000, 50000, 100000};
 
 
     for (int i = 0; i < 13; i++) {
-        int comparsions = 0;
-        int copies = 0;
         vector<int> arr(len[i]);
         for (int k = 0; k < len[i]; k++)
         {
             arr[k] = len[i] - i;
         }
 
-        stats s = natural_merge_sort(arr);
-        comparsions += s.comparison_count;
-        copies += s.copy_count;
+        stats s = sort_func(arr);
+		cout << s;
     }
 }
