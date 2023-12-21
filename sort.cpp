@@ -210,8 +210,6 @@ stats natural_merge_sort(vector<T>& a) {
 template <typename T>
 void graph_for_rand_arr(unsigned int seed, stats (&sort_func)(vector<T>&)) {
 
-	srand(seed);
-
     int* len = new int[13] {1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 25000, 50000, 100000};
 
 	std::ofstream copies_out;
@@ -224,7 +222,9 @@ void graph_for_rand_arr(unsigned int seed, stats (&sort_func)(vector<T>&)) {
 		
 		stats s;
 
-        for (int j = 0; j < 10; j++) {
+        for (int j = 0; j < 100; j++) {
+
+			srand(seed * j + 15);
 
             vector<int> arr(len[i]);
             for (int k = 0; k < len[i]; k++)
@@ -234,8 +234,8 @@ void graph_for_rand_arr(unsigned int seed, stats (&sort_func)(vector<T>&)) {
             s += sort_func(arr);
         }
 
-		s.comparison_count /= 10;
-		s.copy_count /= 10;
+		s.comparison_count /= 100;
+		s.copy_count /= 100;
 
 		if (copies_out.is_open())
 		{
